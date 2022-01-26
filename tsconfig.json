@@ -2,7 +2,8 @@
   "compilerOptions": {
     "baseUrl": "./src",
     "outDir": "./dist",
-    "module": "es6",
+    // "module": "es6",
+    "module": "esnext",
     "moduleResolution": "node",
     "allowJs": true,
     "target": "es5",
@@ -13,8 +14,6 @@
     "strict": true,
     "noImplicitReturns": true,
     "traceResolution": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
     "allowSyntheticDefaultImports": true
   },
   "include": ["./vendor/*", "./typings/*", "./assets/*", "./src/**/*"]

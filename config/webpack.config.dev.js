@@ -9,7 +9,7 @@ module.exports = {
     // https://webpack.js.org/concepts/hot-module-replacement/
     hot: true,
     port: 8080,
-    open: false,
+    open: true,
     client: {
       overlay: {
         errors: true,

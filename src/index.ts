@@ -3,6 +3,7 @@
 // import "p5"
 import p5, { Shader } from "p5"
 import { Camera, RendererGL } from "p5"
+import exp, { Vector, Vector3, Vector4, Matrix4 } from "@0b5vr/experimental"
 
 console.log(fxhash) // the 64 chars hex number fed to your algorithm
 const seed = ~~(fxrand() * 123456789)
@@ -174,51 +175,102 @@ class WMath {
   }
 }
 
+let pGlobal: p5
+
+class UVConvert {
+  static UVToNDC(v: p5.Vector): p5.Vector {
+    return pGlobal.createVector(v.x + 0.5, v.y + 0.5, v.z + 0.5)
+  }
+  static NDCToScreen(v: p5.Vector): p5.Vector {
+    const maxAxis = Math.max(win.w, win.h)
+    return pGlobal.createVector((v.x + 0.5) * maxAxis, (v.y + 0.5) * maxAxis, (v.z + 0.5) * maxAxis)
+  }
+}
+
 const sketch = (p: p5) => {
   let shad: p5.Shader
   let shadPost: p5.Shader
+  let shadSplat: p5.Shader
   let pg: p5.Graphics
+  let pgStamp: p5.Graphics
   // ------------- SETUP ------------- //
   p.preload = () => {}
   p.setup = () => {
+    pGlobal = p
+    // Canvas
     win.w = window.innerWidth
     win.h = window.innerHeight
     win.s = Math.min(window.innerWidth, window.innerHeight)
     win.t = (win.h - win.s) / 2
     win.l = (win.w - win.s) / 2
     p.createCanvas(win.w, win.h, p.WEBGL)
-    const vertSrc = require("raw-loader!glslify-loader!./quad.vert")
-    shad = p.createShader(require("raw-loader!glslify-loader!./quad.vert"), require("raw-loader!glslify-loader!./shad.frag"))
-    shadPost = p.createShader(require("raw-loader!glslify-loader!./quad.vert"), require("raw-loader!glslify-loader!./post.frag"))
     p.frameRate(config.frameRate)
     p.colorMode(p.HSB, 1)
-    pg = p.createGraphics(win.w, win.h)
+
+    // Shaders
+    const vertSrc = require("./quad.vert").default
+    shad = p.createShader(vertSrc, require("./shad.frag").default)
+    shadPost = p.createShader(vertSrc, require("./post.frag").default)
+    shadSplat = p.createShader(vertSrc, require("./splat.frag").default)
+
+    // Pg
+    pg = p.createGraphics(win.w, win.h, p.WEBGL)
+    pg.background(255)
+    pg.rectMode(p.CENTER)
+
+    pgStamp = p.createGraphics(win.w, win.h, p.WEBGL)
+    pgStamp.rectMode(p.CENTER)
+    pgStamp.background(255)
   }
 
   // ------------- DRAW ------------- //
   p.draw = () => {
-    pg.background(255)
-    // p.circle(10, 10, 10)
+    // Stamp
+    // pgStamp.clear()
+    // pg.clear()
 
-    pg.rectMode(p.CENTER)
+    // let cnt = 20
+    // let trail: Array<p5.Vector> = []
+    // let startPos: p5.Vector = p.createVector()
+    // for (let i = 0; i < cnt; i++) {
+    //   trail.push(startPos.add(fxrand() * 2 - 1, fxrand() * 2 - 1).copy())
+    // }
 
-    let cnt = 20
-    for (let i = 0; i < cnt; i++) {
-      for (let j = 0; j < cnt; j++) {
-        pg.circle((i / cnt) * win.w, (j / cnt) * win.h, 3)
-      }
-    }
+    // // pgStamp.fill(155, 0, 0)
+    // pgStamp.noFill()
+    // pgStamp.stroke(155)
+    // pgStamp.strokeWeight(20)
+    // pgStamp.beginShape()
+    // for (let i = 0; i < cnt; i++) {
+    //   let v: p5.Vector = UVConvert.NDCToScreen(trail[i])
+    //   v = p.createVector(win.w * fxrand(), win.h * fxrand(), 0)
+    //   pgStamp.vertex(v.x, v.y)
+    // }
+    // pgStamp.endShape()
+    // pgStamp.endShape("close")
 
-    shadPost.setUniform("u_resolution", [win.w, win.h])
-    shadPost.setUniform("u_time", p.millis() / 1000)
-    shadPost.setUniform("u_frame", p.frameCount)
-    shadPost.setUniform("tex0", pg)
-    p.shader(shadPost)
+    // Plot
+    // shadSplat.setUniform("u_resolution", [win.w, win.h])
+    // shadSplat.setUniform("u_time", p.millis() / 1000)
+    // shadSplat.setUniform("u_frame", p.frameCount)
+    // shadSplat.setUniform("prevFrameTex", pg)
+    // shadSplat.setUniform("splatTex", pgStamp)
+    pg.shader(shadSplat)
+    // pg.quad(-1, -1, 1, -1, 1, 1, -1, 1)
+    pg.rect(0, 0, win.w, win.h)
 
-    p.quad(-1, -1, 1, -1, 1, 1, -1, 1)
+    // Composite
+    // shadPost.setUniform("u_resolution", [win.w, win.h])
+    // shadPost.setUniform("u_time", p.millis() / 1000)
+    // shadPost.setUniform("u_frame", p.frameCount)
+    // shadPost.setUniform("tex0", pg)
+    // p.shader(shadPost)
+    // p.quad(-1, -1, 1, -1, 1, 1, -1, 1)
+
+    p.image(pg, 0, 0, win.w, win.h)
   }
   p.windowResized = () => {
-    init()
+    p.setup()
   }
 }
 
