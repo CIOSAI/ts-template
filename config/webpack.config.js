@@ -1,6 +1,6 @@
-const path = require("path");
-const webpack = require("webpack");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
+const path = require("path")
+const webpack = require("webpack")
+const HtmlWebpackPlugin = require("html-webpack-plugin")
 
 module.exports = {
   entry: "./src/index.ts",
@@ -21,6 +21,11 @@ module.exports = {
       { test: /\.js$/, loader: "source-map-loader" },
       { test: /\.css$/i, use: ["style-loader", "css-loader"] },
       { test: /\.(png|jpe?g|gif)$/i, use: ["file-loader"] },
+      {
+        test: /\.(glsl|vs|fs|vert|frag)$/,
+        exclude: /node_modules/,
+        use: ["raw-loader", "glslify-loader"],
+      },
     ],
   },
   plugins: [
@@ -31,4 +36,4 @@ module.exports = {
       publicPath: "./",
     }),
   ],
-};
+}
