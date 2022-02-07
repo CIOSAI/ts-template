@@ -8,9 +8,9 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, "../dist"),
     filename: "bundle.js",
-    clean: true,
+    // clean: true,
   },
-  devtool: "source-map",
+  devtool: "inline-source-map",
   resolve: {
     extensions: [".js", ".ts"],
     modules: [path.resolve("./src"), path.resolve("./node_modules")],
@@ -26,6 +26,10 @@ module.exports = {
         exclude: /node_modules/,
         use: ["raw-loader"],
       },
+      {
+        test: /\.(woff|woff2|eot|ttf|otf)$/,
+        loader: "file-loader",
+      },
     ],
   },
   plugins: [
@@ -34,6 +38,10 @@ module.exports = {
       template: "./public/index.html",
       inject: "body",
       publicPath: "./",
+      // minify: false,
     }),
   ],
+  optimization: {
+    minimize: false,
+  },
 }

@@ -1,24 +1,26 @@
 {
   "name": "fxhash-template",
   "version": "1.0.0",
-  "description": "fxhash template by Matt Circles",
+  "description": "fx hash template",
   "main": "index.ts",
   "scripts": {
     "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write",
     "lint": "eslint . --fix --ext .ts",
     "build": "webpack --config ./config/webpack.config.prod.js",
-    "start": "webpack serve --config ./config/webpack.config.dev.js"
+    "start": "webpack-cli serve --config ./config/webpack.config.dev.js --mode development"
   },
   "author": "Matt Circles",
   "license": "MIT",
   "dependencies": {
-    "@0b5vr/experimental": "^0.7.1",
-    "@types/p5": "^1.3.3",
-    "glslify-loader": "^2.0.0",
-    "p5": "^1.4.0",
-    "raw-loader": "^4.0.2"
+    "chroma-js": "^2.3.0",
+    "p5": "^1.4.0"
   },
   "devDependencies": {
+    "glslify-loader": "^2.0.0",
+    "raw-loader": "^4.0.2",
+    "@types/chroma-js": "^2.1.3",
+    "@types/p5": "^1.3.3",
+    "@types/webgl2": "0.0.6",
     "@typescript-eslint/eslint-plugin": "^5.6.0",
     "@typescript-eslint/parser": "^5.6.0",
     "adm-zip": "^0.5.9",
